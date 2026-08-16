@@ -160,14 +160,14 @@ func (s *Service) Finalize(id string, operator string, at time.Time) error {
 	if err != nil {
 		return err
 	}
-	if err := s.precheck(c, at); err == nil {
-		next, terr := s.transition(c, model.StageClosed, operator, "结案", at)
-		if terr != nil {
-			return terr
-		}
-		return s.registry.Save(next)
+	if perr := s.precheck(c, at); perr != nil {
+		return perr
 	}
-	return err
+	next, terr := s.transition(c, model.StageClosed, operator, "结案", at)
+	if terr != nil {
+		return terr
+	}
+	return s.registry.Save(next)
 }
 
 // Schedule 返回案件时限表。
